@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    static String poo = "bulbasaur";
+    static String pokemon = "bulbasaur";
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -96,12 +96,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                poo = query;
-                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-                // Set up the ViewPager with the sections adapter.
-                mViewPager = (ViewPager) findViewById(R.id.container);
-                mViewPager.setAdapter(mSectionsPagerAdapter);
+                /*TODO Question 1
+                    reset the section pager adapter, in the same manner as was done in onCreate
+                 */
                 return true;
             }
 
@@ -160,17 +157,22 @@ public class MainActivity extends AppCompatActivity {
             final View rootView;
             switch(position) {
                 case 1:
-                    rootView = inflater.inflate(R.layout.fragment_main, container, false);
-                    ((TextView) rootView.findViewById(R.id.section_label)).setText(poo);
+                    /* TODO Question 2
+                        set the rootView's layout file to fragment_main
+                     */
+                    //YOUR CODE HERE
+                    ((TextView) rootView.findViewById(R.id.section_label)).setText(pokemon);
                     new AsyncTask<Void, Void, JSONObject>() {
                         protected JSONObject doInBackground(Void... voids) {
                             try {
-                                URL url = new URL("http://pokeapi.co/api/v2/pokemon/" + poo.toLowerCase());
-                                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                                conn.setRequestMethod("GET");
-                                InputStream in = new BufferedInputStream(conn.getInputStream());
-                                String response = ListAdapter.convertStreamToString(in);
-                                JSONObject json = new JSONObject(response);
+                                URL url = new URL("http://pokeapi.co/api/v2/pokemon/" + pokemon.toLowerCase());
+                                /* TODO Question 3
+                                    using the above url, return the json object using a get request
+                                    To convert an inputstream to string, use ListAdapter.convertStreamToString
+                                 */
+
+                                //YOUR CODE HERE
+
                                 return json;
                             }
                             catch (Exception e) {return null;}
@@ -178,21 +180,16 @@ public class MainActivity extends AppCompatActivity {
 
                         protected void onPostExecute(JSONObject json) {
                             try {
-                                /*((ImageView) rootView.findViewById(R.id.imageView)).setImageBitmap(Glide.
-                                        with(getActivity()).
-                                        load(json.getJSONObject("sprites").getString("front_default").replace("\\", "")).
-                                        asBitmap().
-                                        into(100, 100). // Width and height
-                                        get());*/
-                                String types = json.getJSONArray("types").getJSONObject(0).getJSONObject("type").getString("name");
-                                if (json.getJSONArray("types").length() > 1) {
-                                    types = json.getJSONArray("types").getJSONObject(1).getJSONObject("type").getString("name") + " / " + types;
+                                JSONArray typeArr = /* TODO Question 4 initialize the array of types*/
+                                String types = /* TODO Question 5: get the name of the first type*/;
+                                if (typeArr.length() > 1) {
+                                    types = /* TODO Question 6: get the name of the second type*/ + " / " + types;
                                 }
-                                JSONArray statsArr = json.getJSONArray("stats");
+                                JSONArray statsArr = /* TODO Question 7 initialize the array of stats*/;
                                 String stats = "";
                                 for (int i = statsArr.length() - 1; i >= 0; i--) {
-                                    stats += statsArr.getJSONObject(i).getJSONObject("stat").getString("name");
-                                    stats += ": " + statsArr.getJSONObject(i).getInt("base_stat") + "\n";
+                                    stats += /* TODO Question 8 get the name of the stat at index i*/;
+                                    stats += ": " + /* TODO Question 9 get the value of the stat at index i*/ + "\n";
                                 }
                                 ((TextView) rootView.findViewById(R.id.textView)).setText(types);
                                 ((TextView) rootView.findViewById(R.id.textView2)).setText(stats);
@@ -204,15 +201,10 @@ public class MainActivity extends AppCompatActivity {
                     new AsyncTask<Void, Void, Bitmap>() {
                         protected Bitmap doInBackground(Void... voids) {
                             try {
-                                URL url = new URL("http://pokeapi.co/api/v2/pokemon/" + poo.toLowerCase());
-                                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                                conn.setRequestMethod("GET");
-                                InputStream in = new BufferedInputStream(conn.getInputStream());
-                                String response = ListAdapter.convertStreamToString(in);
-                                JSONObject json = new JSONObject(response);
+                                //TODO optional get the tiny ass spriteURL
                                 return Glide.
                                         with(getActivity()).
-                                        load(json.getJSONObject("sprites").getString("front_default").replace("\\", "")).
+                                        load(spriteURL.replace("\\", "")).
                                         asBitmap().
                                         into(100, 100). // Width and height
                                         get();
@@ -230,9 +222,10 @@ public class MainActivity extends AppCompatActivity {
                     }.execute();
                     return rootView;
                 case 2:
+                    //TODO next section in ListAdapter also i forgot to make you inflate fragment_moves pls ignore
                     rootView = inflater.inflate(R.layout.fragment_moves, container, false);
                     RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-                    ListAdapter adapter = new ListAdapter(poo);
+                    ListAdapter adapter = new ListAdapter(pokemon);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     recyclerView.setAdapter(adapter);
                     return rootView;

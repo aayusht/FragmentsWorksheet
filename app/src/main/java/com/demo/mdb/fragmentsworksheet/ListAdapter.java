@@ -33,24 +33,20 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CustomViewHold
         new AsyncTask<Void, Void, Void>() {
             protected Void doInBackground(Void... voids) {
                 try {
-                    URL url = new URL("http://pokeapi.co/api/v2/pokemon/" + pokemon.toLowerCase());
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("GET");
-                    InputStream in = new BufferedInputStream(conn.getInputStream());
-                    String response = convertStreamToString(in);
-                    JSONObject json = new JSONObject(response);
-                    JSONArray jsonMoves = json.getJSONArray("moves");
+                    /* TODO Question 10
+                        initialize a JSON object for the pokemon the same as Question 3
+                        lol this should be in a Utils class but that would require a callable rip
+                     */
+                    JSONArray jsonMoves = /*TODO Question 11 get the moves array*/;
                     int len = jsonMoves.length();
-                    if (len==0) {Log.e("rip", "rip");}
-                    Log.e("this is it", response);
                     for (int i=0;i<len;i++){
-                        URL url2 = new URL(jsonMoves.getJSONObject(i).getJSONObject("move").getString("url").replace("\\", ""));
+                        String urlString = /*TODO Question 12 get the url String from the move at index i*/;
+                        URL url2 = new URL(urlString.replace("\\", ""));
                         Log.e("url", url2.toString());
-                        HttpURLConnection conn2 = (HttpURLConnection) url2.openConnection();
-                        conn2.setRequestMethod("GET");
-                        InputStream in2 = new BufferedInputStream(conn2.getInputStream());
-                        JSONObject moveData = new JSONObject(convertStreamToString(in2));
-                        moveNames.add(moveData.getJSONArray("names").getJSONObject(0).getString("name"));
+                        /* TODO Question 12
+                            use http get to get the JSONObject moveData containing the data for each move
+                         */
+                        moveNames.add(/*TODO Question 13 get the first name from moveData's name array (the English one)*/);
                         moveDeets.add("Power: " + moveData.getString("power") + " / Accuracy: " + moveData.getString("accuracy"));
                         publishProgress();
                     }
@@ -100,6 +96,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CustomViewHold
         holder.moveDetailsTextView.setText(moveDeets.get(position).replace("null", "-"));
     }
 
+    //TODO lol why you looking here i found this on stackoverflow
     static String convertStreamToString(java.io.InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
