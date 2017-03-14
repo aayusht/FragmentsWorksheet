@@ -33,33 +33,17 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CustomViewHold
         new AsyncTask<Void, Void, Void>() {
             protected Void doInBackground(Void... voids) {
                 try {
-                    /* TODO Question 10
-                        initialize a JSON object for the pokemon the same as Question 3
-                        lol this should be in a Utils class but that would require a callable rip
-                     */
-                    JSONArray jsonMoves = /*TODO Question 11 get the moves array*/;
+                    JSONObject json = Utils.getJSON("http://pokeapi.co/api/v2/pokemon/" + pokemon.toLowerCase());
+                    JSONArray jsonMoves = json.getJSONArray("moves");
                     int len = jsonMoves.length();
                     for (int i=0;i<len;i++){
-                        String urlString = /*TODO Question 12 get the url String from the move at index i*/;
-                        URL url2 = new URL(urlString.replace("\\", ""));
-                        Log.e("url", url2.toString());
-                        /* TODO Question 12
-                            use http get to get the JSONObject moveData containing the data for each move
-                         */
-                        moveNames.add(/*TODO Question 13 get the first name from moveData's name array (the English one)*/);
+                        String urlString = jsonMoves.getJSONObject(i).getJSONObject("move").getString("url");
+                        JSONObject moveData = Utils.getJSON(urlString.replace("\\", ""));
+                        moveNames.add(moveData.getJSONArray("names").getJSONObject(0).getString("name"));
                         moveDeets.add("Power: " + moveData.getString("power") + " / Accuracy: " + moveData.getString("accuracy"));
                         publishProgress();
                     }
                     if (moveNames.size()==0) {Log.e("rip", "rrip");}
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                    Log.e("bad", "url");
-                } catch (ProtocolException p) {
-                    p.printStackTrace();
-                    Log.e("bad", "protocol");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.e("bad", "io");
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e("bad", e.getMessage());
@@ -97,10 +81,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CustomViewHold
     }
 
     //TODO lol why you looking here i found this on stackoverflow
-    static String convertStreamToString(java.io.InputStream is) {
-        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
-    }
+
 
     class CustomViewHolder extends RecyclerView.ViewHolder{
         TextView moveNameTextView;
